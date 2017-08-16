@@ -10,6 +10,7 @@ const css = require('./webpack/css');
 const extract = require('./webpack/css.extract');
 const uglify = require('./webpack/js.uglify');
 const images = require('./webpack/images');
+const es6 = require('./webpack/es6');
 
 const PATH = {
   src: path.join(__dirname, 'src'),
@@ -19,18 +20,32 @@ const PATH = {
 const common = merge([
   {
     entry: {
-
+      'index': `${PATH.src}/views/index/index`,
+      'blog': `${PATH.src}/views/blog/blog`
     },
     output: {
       path: PATH.dest,
       filename: 'js/[name].js'
     },
     plugins: [
-
+      new HtmlWebpackPlugin({
+        filename: 'index.html',
+        chunks: ['index', 'common'],
+        template: PATH.src + '/views/index/index.pug'
+      }),
+      new HtmlWebpackPlugin({
+        filename:  'blog.html',
+        chunks: ['blog', 'common'],
+        template: PATH.src + '/views/blog/blog.pug'
+      }),
+      new webpack.optimize.CommonsChunkPlugin({
+        name: 'common'
+      })
     ]
   },
   pug(),
-  images()
+  images(),
+  es6()
 ]);
 
 module.exports = env => {
